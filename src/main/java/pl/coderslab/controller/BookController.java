@@ -7,7 +7,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import pl.coderslab.dao.BookDao;
+import pl.coderslab.dao.PublisherDao;
 import pl.coderslab.model.Book;
+import pl.coderslab.model.Publisher;
+
+import java.sql.PseudoColumnUsage;
 
 @Controller
 @RequestMapping(path = "/book")
@@ -15,14 +19,28 @@ public class BookController {
     @Autowired
     private BookDao bookDao;
 
+    @Autowired
+    private PublisherDao publisherDao;
+
     @RequestMapping(path = "/save")
     @ResponseBody
     public String saveBook(@RequestParam String title, @RequestParam Integer rating, @RequestParam String description) {
+	Publisher publisher = new Publisher();
+	publisher.setName("Nowe wydawnictwo");
+	publisherDao.save(publisher);
+
 	Book book = new Book();
 	book.setTitle(title);
 	book.setRating(rating);
 	book.setDescription(description);
+	book.setPublisher(publisher);
+
 	bookDao.save(book);
+
+
+//	publisher.setName("Drugie wydawnictwo");
+//	bookDao.update(book);
+
 	return book.toString();
     }
 
