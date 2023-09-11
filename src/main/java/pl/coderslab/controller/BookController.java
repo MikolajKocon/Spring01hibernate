@@ -6,40 +6,48 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import pl.coderslab.dao.AuthorDao;
 import pl.coderslab.dao.BookDao;
 import pl.coderslab.dao.PublisherDao;
+import pl.coderslab.model.Author;
 import pl.coderslab.model.Book;
 import pl.coderslab.model.Publisher;
 
 import java.sql.PseudoColumnUsage;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping(path = "/book")
 public class BookController {
     @Autowired
-    private BookDao bookDao;
-
+    BookDao bookDao;
     @Autowired
-    private PublisherDao publisherDao;
+    PublisherDao publisherDao;
+    @Autowired
+    AuthorDao authorDao;
 
     @RequestMapping(path = "/save")
     @ResponseBody
-    public String saveBook(@RequestParam String title, @RequestParam Integer rating, @RequestParam String description) {
-	Publisher publisher = new Publisher();
-	publisher.setName("Nowe wydawnictwo");
-	publisherDao.save(publisher);
-
+    public String saveBook(@RequestParam String title, @RequestParam Integer rating, @RequestParam String description,
+	    @RequestParam String publisher) {
 	Book book = new Book();
 	book.setTitle(title);
 	book.setRating(rating);
 	book.setDescription(description);
-	book.setPublisher(publisher);
+
+	Publisher publisherEntity = new Publisher();
+	publisherEntity.setName(publisher);
+	publisherDao.save(publisherEntity);
+	book.setPublisher(publisherEntity);
 
 	bookDao.save(book);
 
-
-//	publisher.setName("Drugie wydawnictwo");
-//	bookDao.update(book);
+	Author author = authorDao.getById(1L);
+	if (author != null) {
+	    author.getBooks().add(book);
+	}
+	authorDao.update(author);
 
 	return book.toString();
     }
