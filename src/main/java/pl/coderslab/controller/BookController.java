@@ -15,6 +15,7 @@ import pl.coderslab.model.Publisher;
 
 import java.sql.PseudoColumnUsage;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Controller
@@ -42,6 +43,7 @@ public class BookController {
 	book.setPublisher(publisherEntity);
 
 	bookDao.save(book);
+	List<Book> newList = new LinkedList<>();
 
 	Author author = authorDao.getById(1L);
 	if (author != null) {
@@ -50,6 +52,28 @@ public class BookController {
 	authorDao.update(author);
 
 	return book.toString();
+    }
+
+    @RequestMapping(path = "/test")
+    @ResponseBody
+    public String test() {
+	Book book = new Book();
+	book.setTitle("Pan Wolodyjowski");
+	book.setRating(10);
+
+	bookDao.save(book);
+
+	return book.toString();
+    }
+
+    @RequestMapping(path = "/delete2")
+    @ResponseBody
+    public String delete2() {
+	Book book = new Book();
+	book.setId(1L);
+	bookDao.delete2(book);
+
+	return "deleted";
     }
 
     @RequestMapping(path = "/update")
@@ -76,6 +100,12 @@ public class BookController {
     @ResponseBody
     public String getBook(@RequestParam long id) {
 	return bookDao.getById(id).toString();
+    }
+
+    @RequestMapping(path = "/getAll")
+    @ResponseBody
+    public String getAllBook() {
+	return bookDao.findAllBooks().toString();
     }
 
 //    @RequestMapping(path = "/get/{id}")
